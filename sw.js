@@ -1,6 +1,6 @@
 // Service worker: po prvom nacitani hra bezi aj bez internetu.
 // Po zmene suborov zvys VERSION - stara cache sa zmaze a klient sa sam obnovi.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CACHE = `vesmirne-hadanky-${VERSION}`;
 
 const ASSETS = [
@@ -37,7 +37,11 @@ self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const cache = await caches.open(CACHE);
     // po jednom - keby jeden subor chybal, nech to nezhodi cely install
-    await Promise.all(ASSETS.map((url) => cache.add(url).catch(() => {})));
+    // cache:'reload' obchadza HTTP cache prehliadaca; bez toho by nova verzia
+    // mohla na hostingu s dlhym max-age nacachovat stare subory
+    await Promise.all(ASSETS.map(
+      (url) => cache.add(new Request(url, { cache: 'reload' })).catch(() => {}),
+    ));
     await self.skipWaiting();
   })());
 });

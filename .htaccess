@@ -1,0 +1,31 @@
+# Nastavenie pre Apache / LiteSpeed (Hostinger). Kopiruje sa do dist/ cez build.sh.
+
+# ES moduly potrebuju spravny MIME typ, inak ich prehliadac odmietne spustit
+AddType text/javascript .js
+AddType application/json .json
+AddType font/woff2 .woff2
+
+# HTTPS je podmienka pre service worker; presmerovanie nechavame aj tu,
+# keby v hPaneli nebolo zapnute "Force HTTPS"
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # sw.js a index.html musia byt vzdy cerstve, inak sa nova verzia neprejavi
+  <FilesMatch "^(sw\.js|index\.html|manifest\.json)$">
+    Header set Cache-Control "no-cache, max-age=0, must-revalidate"
+  </FilesMatch>
+  # zvysok si aj tak drzi service worker vo vlastnej cache
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+  <FilesMatch "\.(woff2|png)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+# vypnutie adresarovych vypisov
+Options -Indexes

@@ -32,14 +32,30 @@ Je to statická stránka - stačí hocijaký hosting (Netlify, Vercel, Cloudflar
 vlastný nginx/Apache).
 
 ```bash
-npm run dist      # poskladá dist/ (~600 kB) presne s tým, čo patrí na server
+npm run dist      # poskladá dist/ (~600 kB) a dist.zip na nahratie
 ```
 
-Obsah `dist/` pretiahni na Netlify Drop alebo Cloudflare Pages - dostaneš HTTPS adresu,
-ktorú otvoríš na tablete. `dist/` je v `.gitignore`, necommituje sa.
-
-Sú v ňom `index.html manifest.json sw.js css/ js/ fonts/ icons/`; mimo ostávajú
+V balíku sú `index.html manifest.json sw.js .htaccess css/ js/ fonts/ icons/`; mimo ostávajú
 `node_modules/`, `tests/`, `package*.json` a `images/` (fotky knižky, hra ich nepoužíva).
+`dist/` aj `dist.zip` sú v `.gitignore`.
+
+### Hostinger (hPanel, Business plán)
+
+1. `npm run dist`
+2. hPanel → **Súbory → Správca súborov** → otvor `public_html` (alebo podpriečinok, ak má hra
+   bežať na `/hadanky/` - všetky cesty sú relatívne, funguje to aj tak).
+3. Nahraj `dist.zip`, klikni naň pravým a **Extract**, potom zip zmaž.
+4. hPanel → **Zabezpečenie → SSL** - nech je certifikát vydaný a zapnuté **Force HTTPS**.
+   Bez HTTPS sa nespustí service worker a hra nebude fungovať offline.
+5. Otvor adresu na tablete a daj "Pridať na plochu".
+
+`.htaccess` v balíku rieši MIME typ pre ES moduly, presmerovanie na HTTPS a hlavne to,
+aby sa `sw.js` a `index.html` necachovali - inak by sa nová verzia neprejavila.
+
+### Netlify / Cloudflare Pages
+
+Obsah `dist/` pretiahni na app.netlify.com/drop - o pár sekúnd máš HTTPS adresu.
+`.htaccess` tam nič nerobí, ale neprekáža.
 
 Dve podmienky, inak to nepobeží:
 - server musí posielať `.js` ako `text/javascript` (ES moduly),

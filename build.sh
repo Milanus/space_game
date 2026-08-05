@@ -6,8 +6,13 @@ cd "$(dirname "$0")"
 
 rm -rf dist
 mkdir -p dist
-cp index.html manifest.json sw.js dist/
+cp index.html manifest.json sw.js .htaccess dist/
 cp -R css js fonts icons dist/
 find dist -name '.DS_Store' -delete
 
+# zip pre Hostinger - File Manager ho vie nahrat a rozbalit v public_html
+rm -f dist.zip
+(cd dist && zip -qr ../dist.zip .)
+
+echo "dist.zip hotovy ($(du -h dist.zip | cut -f1))"
 echo "dist/ hotovy ($(du -sh dist | cut -f1)), VERSION v sw.js = $(sed -n "s/^const VERSION = '\(.*\)';/\1/p" sw.js)"

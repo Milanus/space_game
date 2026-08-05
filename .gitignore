@@ -3,6 +3,7 @@ node_modules/
 
 # balik na nahratie na hosting (npm run dist)
 dist/
+dist.zip
 
 # fotky predlohovej knizky - 37 MB, hra ich nepouziva a na server nepatria
 images/
