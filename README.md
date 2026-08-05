@@ -29,13 +29,17 @@ Za každé kolo sú 1-3 hviezdy podľa počtu chýb, najlepší výsledok sa pam
 ## Nasadenie na server
 
 Je to statická stránka - stačí hocijaký hosting (Netlify, Vercel, Cloudflare Pages, GitHub Pages,
-vlastný nginx/Apache). Nahraj:
+vlastný nginx/Apache).
 
-```
-index.html  manifest.json  sw.js  css/  js/  fonts/  icons/
+```bash
+npm run dist      # poskladá dist/ (~600 kB) presne s tým, čo patrí na server
 ```
 
-Nenahrávaj `node_modules/`, `tests/`, `package*.json` ani `images/` (fotky knižky, hra ich nepoužíva).
+Obsah `dist/` pretiahni na Netlify Drop alebo Cloudflare Pages - dostaneš HTTPS adresu,
+ktorú otvoríš na tablete. `dist/` je v `.gitignore`, necommituje sa.
+
+Sú v ňom `index.html manifest.json sw.js css/ js/ fonts/ icons/`; mimo ostávajú
+`node_modules/`, `tests/`, `package*.json` a `images/` (fotky knižky, hra ich nepoužíva).
 
 Dve podmienky, inak to nepobeží:
 - server musí posielať `.js` ako `text/javascript` (ES moduly),
