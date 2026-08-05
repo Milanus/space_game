@@ -11,6 +11,7 @@ npm start                      # statický server na http://localhost:8777
 npm test                       # oba testy
 node tests/logic.test.mjs      # len generátory (bludisko, rozdiely, kvízy)
 node tests/smoke.test.mjs      # len preklikanie hier cez jsdom
+npm run dist                   # dist/ + dist.zip na nahratie na hosting
 ```
 
 Žiadny build ani lint - to, čo je v priečinku, beží v prehliadači. Node je iba na testy.
@@ -76,6 +77,19 @@ Prekladá sa logo, `title`, aria-labely a názvy hier - nie obsah hier.
 `manifest.json` + `sw.js` + `icons/`. **Po každej zmene súborov zvýš `VERSION` v `sw.js`**,
 inak dostane používateľ starú verziu z cache. Nový súbor treba pridať aj do poľa `ASSETS`.
 Service worker beží len na HTTPS/localhost.
+
+## Nasadenie
+
+Git remote je `git@github.com:Milanus/space_game.git` (SSH, HTTPS push v tomto prostredí
+nemá prihlásenie). Vetva `main`.
+
+Cieľ je **Hostinger, Business plán** (Apache/LiteSpeed, hPanel):
+`npm run dist` poskladá `dist/` + `dist.zip` (`build.sh`), zip sa v Správcovi súborov
+nahrá do `public_html` a rozbalí. `dist/`, `dist.zip` a `images/` sú v `.gitignore`.
+
+`.htaccess` je súčasť balíka a rieši MIME typ pre ES moduly, force HTTPS a `no-cache`
+pre `sw.js` + `index.html`. Bez toho by sa nová verzia deťom neprejavila. Service worker
+si preto pri inštalácii ťahá súbory s `cache: 'reload'`. Podrobný postup je v `README.md`.
 
 ## Testovanie
 
