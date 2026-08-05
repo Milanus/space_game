@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hádanky">
+<meta name="theme-color" content="#0a0e2c">
+<title>Vesmírne hádanky</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="starfield"></canvas>
+
+<div id="app">
+  <!-- HUB -->
+  <section id="hub" class="screen active">
+    <button class="icon-btn sound-btn" id="btn-sound" data-i18n-aria="btn.sound" aria-label="Zvuk"></button>
+    <h1 class="logo">
+      <span class="logo-top" data-i18n="logo.top" data-text="Vesmírne">Vesmírne</span>
+      <span class="logo-bottom" data-i18n="logo.bottom" data-text="Hádanky">Hádanky</span>
+    </h1>
+    <div class="cards" id="game-cards"></div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="screen">
+    <header class="bar">
+      <button class="icon-btn" id="btn-back" data-i18n-aria="btn.back" aria-label="Späť">
+        <svg viewBox="0 0 24 24"><path d="M15 5 L8 12 L15 19" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="progress" id="progress"></div>
+      <button class="icon-btn" id="btn-again" data-i18n-aria="btn.again" aria-label="Znova">
+        <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M20 3v5h-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
+    <div id="stage"></div>
+  </section>
+</div>
+
+<!-- WIN OVERLAY -->
+<div id="win" class="overlay">
+  <div class="win-box">
+    <div class="win-stars" id="win-stars"></div>
+    <div class="win-hero" id="win-hero"></div>
+    <div class="win-actions">
+      <button class="big-btn ghost" id="win-home" data-i18n-aria="btn.home" aria-label="Domov">
+        <svg viewBox="0 0 24 24"><path d="M4 11 L12 4 L20 11 V20 H4 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="big-btn play" id="win-next" data-i18n-aria="btn.next" aria-label="Ďalej">
+        <svg viewBox="0 0 24 24"><path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+<script>
+// offline rezim; na file:// sa registracia nepodari a to je v poriadku
+if ('serviceWorker' in navigator) {
+  const hadController = !!navigator.serviceWorker.controller;
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  // nova verzia prevzala kontrolu - obnovime, nech dieta nehra na starych suboroch
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) location.reload();
+  });
+}
+</script>
+</body>
+</html>

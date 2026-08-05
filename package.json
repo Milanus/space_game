@@ -1,0 +1,15 @@
+{
+  "name": "vesmirne-hadanky",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vesmirne hadanky - detska hra do prehliadaca (3 minihry, bez textu)",
+  "scripts": {
+    "start": "python3 -m http.server 8777",
+    "test": "node tests/logic.test.mjs && node tests/smoke.test.mjs",
+    "dist": "sh build.sh"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

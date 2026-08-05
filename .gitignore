@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+
+# balik na nahratie na hosting (npm run dist)
+dist/
+
+# fotky predlohovej knizky - 37 MB, hra ich nepouziva a na server nepatria
+images/
