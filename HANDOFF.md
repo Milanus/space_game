@@ -93,6 +93,7 @@ takže preklad musí prepísať aj `data-text` - inak ostane pod novým textom s
 | Čo nasleduje? | sequence.js | AB → AAB → ABC → ABBC, 4 kolá |
 | Prvé písmeno | letters.js | 2 → 4 možnosti, 5 kôl |
 | Poskladaj tvar | tangram.js | raketa (3 dieliky) → hviezda (6) |
+| Zvieracia ambulancia | vet.js | 6 úrovní: ťukať baktérie, ťahať náplasti na rany, šúchať blato (každé 2×, druhé kolo viac) |
 
 Hviezdy 1-3 podľa počtu chýb, najlepší výsledok na hru sa drží v `localStorage`.
 Úroveň sa posúva tlačidlom "ďalej" po výhre a ukladá sa - pri ďalšom spustení hra
@@ -115,7 +116,7 @@ V `localStorage` je jeden kľúč `vesmirne-hadanky`:
 
 ## Čo je overené a čo nie
 
-Overené: všetkých 7 hier prejde do výhry, offline režim, service worker, cache s fontami,
+Overené: všetkých 8 hier prejde do výhry, offline režim, service worker, cache s fontami,
 vzhľad na 1180×820 a 430×900.
 
 **Neoverené: reálny dotyk na reálnom tablete.** Všetko bolo klikané myšou/syntetickými
@@ -123,7 +124,8 @@ eventmi. Pri prvom hraní s dieťaťom sleduj hlavne:
 - ťahanie dielikov v "Poskladaj tvar" - tolerancia zapadnutia je `SNAP = 9` (9 % šírky),
   malým prstom to môže chcieť viac,
 - ťahanie rakety v bludisku pri rýchlom pohybe prsta,
-- či nie sú terče na ťukanie v "Nájdi rozdiely" primalé.
+- či nie sú terče na ťukanie v "Nájdi rozdiely" primalé,
+- "Zvieracia ambulancia": `SNAP = 11` pri náplastiach a `RUB_NEED = 60` (koľko treba šúchať blato).
 
 ## Nájdené a opravené bugy (nech sa nevrátia)
 

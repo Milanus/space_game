@@ -11,8 +11,9 @@ import counting from './games/counting.js';
 import sequence from './games/sequence.js';
 import letters from './games/letters.js';
 import tangram from './games/tangram.js';
+import vet from './games/vet.js';
 
-const GAMES = [pairs, maze, diffs, counting, sequence, letters, tangram];
+const GAMES = [pairs, maze, diffs, counting, sequence, letters, tangram, vet];
 
 const hub = document.getElementById('hub');
 const gameScreen = document.getElementById('game');

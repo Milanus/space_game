@@ -1,6 +1,6 @@
-import { buildMaze, solve } from '/Users/milan/code/kids_space_game/js/games/maze.js';
-import { makeScene, applyDiffs } from '/Users/milan/code/kids_space_game/js/games/differences.js';
-import { detectLang, DICT, LANGS } from '/Users/milan/code/kids_space_game/js/i18n.js';
+import { buildMaze, solve } from '../js/games/maze.js';
+import { makeScene, applyDiffs } from '../js/games/differences.js';
+import { detectLang, DICT, LANGS } from '../js/i18n.js';
 
 let fails = 0;
 const ok = (c, m) => { if (!c) { fails++; console.log('FAIL', m); } };
@@ -51,7 +51,7 @@ for (const count of [3,4,5]) {
 console.log(fails ? `${fails} FAILS` : 'vsetko OK');
 
 /* ---- pribudnute minihry ---- */
-const R = '/Users/milan/code/kids_space_game/js/games';
+const R = new URL('../js/games', import.meta.url).href;
 const { makeRound: countRound } = await import(`${R}/counting.js`);
 const { makeRound: seqRound } = await import(`${R}/sequence.js`);
 const { makeRound: letterRound } = await import(`${R}/letters.js`);
@@ -125,7 +125,7 @@ globalThis.localStorage = {
 };
 const KEY = 'vesmirne-hadanky';
 const { loadProgress, saveStars, saveLevel, saveSound } =
-  await import('/Users/milan/code/kids_space_game/js/util.js');
+  await import('../js/util.js');
 
 ok(loadProgress().sound === true, 'ulozenie: zvuk je vychodzo zapnuty');
 ok(Object.keys(loadProgress().levels).length === 0, 'ulozenie: bez uloh ziadne urovne');

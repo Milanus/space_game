@@ -1,8 +1,9 @@
 // Smoke test cez jsdom: prejde hru tak, ako by ju klikalo dieta.
 import { JSDOM } from 'jsdom';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = '/Users/milan/code/kids_space_game';
+const ROOT = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
 const html = fs.readFileSync(`${ROOT}/index.html`, 'utf8').replace(/<script[\s\S]*?<\/script>/g, '');
 const dom = new JSDOM(html, { pretendToBeVisual: true, url: 'http://localhost:8777/' });
 const { window } = dom;
@@ -47,7 +48,7 @@ let fails = 0;
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 
 const cards = $$('.card');
-ok(cards.length === 7, `hub ma 7 hier (${cards.length})`);
+ok(cards.length === 8, `hub ma 8 hier (${cards.length})`);
 
 /* ---- JAZYK ---- */
 ok(window.document.documentElement.lang === 'cs', 'jazyk: html lang je cs');
@@ -232,6 +233,54 @@ for (const piece of $$('.tan-piece')) {
 await sleep(600);
 ok($$('.tan-piece.locked').length === piecesN, 'skladanie: vsetky dieliky zapadli na miesto');
 ok($('#win').classList.contains('show'), 'skladanie: hotovy obrazok = vyhra');
+
+/* ---- 8. ZVIERACIA AMBULANCIA: baktérie, náplasti, blato ---- */
+const pos = (n) => n.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);
+async function openVet(level) {
+  $('#win-home').click();
+  await sleep(20);
+  $$('.card-slot')[7].querySelectorAll('.lvl')[level].click();
+  await sleep(30);
+  const v = $('.vet-wrap svg');
+  const [, , VW, VH] = v.getAttribute('viewBox').split(' ').map(Number);
+  v.getBoundingClientRect = () => ({ left: 0, top: 0, width: VW, height: VH });
+  return v;
+}
+
+// 1. uroven: tuknut na kazdu bakteriu
+let vsvg = await openVet(0);
+const germs = $$('.vet-germ');
+ok(germs.length === 4, `ambulancia: 4 baktérie (${germs.length})`);
+for (const g of germs) { fire(g.firstElementChild.firstElementChild, 'pointerdown', 50, 50); await sleep(10); }
+await sleep(1700);
+ok($('#win').classList.contains('show'), 'ambulancia: baktérie vyhubené = vyhra');
+
+// 2. uroven: naplast potiahnut na kazdu ranu (zviera je zmensene na 0.8 a posunute)
+vsvg = await openVet(1);
+for (const w of $$('.vet-wound')) {
+  const [x, y] = pos(w);
+  const p = $('.vet-plaster');
+  const [px, py] = pos(p);
+  fire(p.querySelector('rect'), 'pointerdown', px, py);
+  fire(vsvg, 'pointermove', 0.8 * x + 10, 0.8 * y + 8);
+  fire(vsvg, 'pointerup', 0.8 * x + 10, 0.8 * y + 8);
+  await sleep(10);
+}
+await sleep(1700);
+ok($$('.vet-stuck').length === 3, `ambulancia: 3 náplasti prilepené (${$$('.vet-stuck').length})`);
+ok($('#win').classList.contains('show'), 'ambulancia: rany zalepené = vyhra');
+
+// 3. uroven: sucat prstom po blate
+vsvg = await openVet(2);
+for (const m of $$('.vet-mud')) {
+  const [x, y] = pos(m);
+  fire(m.firstElementChild, 'pointerdown', x, y + 8);
+  for (let k = 0; k < 14; k++) fire(vsvg, 'pointermove', x + (k % 2 ? 5 : -5), y + 8);
+  fire(vsvg, 'pointerup', x, y + 8);
+}
+await sleep(1700);
+ok($$('.vet-mud').length === 0, 'ambulancia: blato zmyté');
+ok($('#win').classList.contains('show'), 'ambulancia: čisté zvieratko = vyhra');
 
 ok(errors.length === 0, `ziadne chyby v konzole (${errors.join(' | ')})`);
 console.log(fails ? `\n${fails} FAILS` : '\nvsetko OK');

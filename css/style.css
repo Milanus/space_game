@@ -440,3 +440,22 @@ html, body {
   .card .card-name { font-size: 21px; }
   .card .card-stars { position: absolute; right: 16px; bottom: 12px; }
 }
+
+/* Zvieracia ambulancia */
+.vet-wrap { width: 100%; height: 100%; display: grid; place-items: center; }
+.vet-wrap svg { height: 100%; width: auto; max-width: 100%; aspect-ratio: 100 / 132; touch-action: none; }
+.vet-germ { cursor: pointer; }
+.vet-wobble { animation: wobble 1.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.vet-germ.gone .vet-wobble { animation: vetpop .35s ease-in forwards; }
+.vet-plaster { cursor: grab; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+.vet-plaster.dragging { filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
+.vet-stuck { animation: pop .4s ease; transform-box: fill-box; transform-origin: center; }
+.vet-mud { transition: opacity .1s; }
+.vet-happy { animation: vethop .55s ease 2; transform-box: fill-box; transform-origin: bottom; }
+.vet-spark { animation: vetspark .7s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+.vet-bubble { animation: vetbubble .8s ease-out forwards; }
+@keyframes wobble { 50% { transform: rotate(12deg) scale(1.08); } }
+@keyframes vetpop { 40% { transform: scale(1.4); } 100% { transform: scale(0); opacity: 0; } }
+@keyframes vethop { 40% { transform: translateY(-8px) scaleY(1.04); } 70% { transform: translateY(0) scaleY(.96); } }
+@keyframes vetspark { from { transform: scale(.2) rotate(0); } 50% { transform: scale(1.2) rotate(45deg); } to { transform: scale(0) rotate(90deg); opacity: 0; } }
+@keyframes vetbubble { to { transform: translateY(-6px); opacity: 0; } }
