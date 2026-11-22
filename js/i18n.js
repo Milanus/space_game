@@ -24,6 +24,9 @@ export const DICT = {
     'game.letters': 'Prvé písmeno',
     'game.tangram': 'Poskladaj tvar',
     'game.vet': 'Zvieracia ambulancia',
+    'game.feed': 'Nakŕm zvieratko',
+    'game.xray': 'Röntgen',
+    'game.medicine': 'Daj liek',
   },
   cs: {
     'app.title': 'Vesmírné hádanky',
@@ -44,6 +47,9 @@ export const DICT = {
     'game.letters': 'První písmeno',
     'game.tangram': 'Poskládej tvar',
     'game.vet': 'Zvířecí ambulance',
+    'game.feed': 'Nakrm zvířátko',
+    'game.xray': 'Rentgen',
+    'game.medicine': 'Dej lék',
   },
   en: {
     'app.title': 'Space Puzzles',
@@ -64,6 +70,9 @@ export const DICT = {
     'game.letters': 'First Letter',
     'game.tangram': 'Build the Shape',
     'game.vet': 'Animal Doctor',
+    'game.feed': 'Feed the Pet',
+    'game.xray': 'X-ray',
+    'game.medicine': 'Give Medicine',
   },
 };
 

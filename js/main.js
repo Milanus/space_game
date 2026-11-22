@@ -12,8 +12,11 @@ import sequence from './games/sequence.js';
 import letters from './games/letters.js';
 import tangram from './games/tangram.js';
 import vet from './games/vet.js';
+import feed from './games/feed.js';
+import xray from './games/xray.js';
+import medicine from './games/medicine.js';
 
-const GAMES = [pairs, maze, diffs, counting, sequence, letters, tangram, vet];
+const GAMES = [pairs, maze, diffs, counting, sequence, letters, tangram, vet, feed, xray, medicine];
 
 const hub = document.getElementById('hub');
 const gameScreen = document.getElementById('game');

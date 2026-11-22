@@ -216,6 +216,102 @@ export const SHAPES = {
 
 export const SHAPE_KEYS = Object.keys(SHAPES);
 
+/* ---------- zvieratka (hry v ambulancii) ---------- */
+// Spolocne telo, lisia sa usi. Tvar tvare je v .pet-face, aby ju hra vedela
+// po vyliecani vymenit za usmev cez animalFace(true).
+const EARS = {
+  macka: (c) => `
+    <path d="M28 30 L30 6 L48 20 Z" fill="${fill(c)}" ${S(c)}/>
+    <path d="M72 30 L70 6 L52 20 Z" fill="${fill(c)}" ${S(c)}/>
+    <path d="M32 24 L33 13 L41 20 Z" fill="${PALETTE.pink}" opacity=".8"/>
+    <path d="M68 24 L67 13 L59 20 Z" fill="${PALETTE.pink}" opacity=".8"/>`,
+  pes: (c) => `
+    <path d="M30 22 q-16 -4 -18 14 q-2 16 8 20 q6 -12 12 -24 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange)}/>
+    <path d="M70 22 q16 -4 18 14 q2 16 -8 20 q-6 -12 -12 -24 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange)}/>`,
+  zajac: (c) => `
+    <path d="M38 22 q-10 -22 -2 -24 q8 -2 10 24 Z" fill="${fill(c)}" ${S(c)}/>
+    <path d="M62 22 q10 -22 2 -24 q-8 -2 -10 24 Z" fill="${fill(c)}" ${S(c)}/>
+    <path d="M40 18 q-5 -13 -2 -15 q4 0 5 15 Z" fill="${PALETTE.pink}" opacity=".7"/>
+    <path d="M60 18 q5 -13 2 -15 q-4 0 -5 15 Z" fill="${PALETTE.pink}" opacity=".7"/>`,
+  mys: (c) => `
+    <circle cx="25" cy="20" r="14" fill="${fill(c)}" ${S(c)}/>
+    <circle cx="75" cy="20" r="14" fill="${fill(c)}" ${S(c)}/>
+    <circle cx="25" cy="20" r="8.5" fill="${PALETTE.pink}" opacity=".75"/>
+    <circle cx="75" cy="20" r="8.5" fill="${PALETTE.pink}" opacity=".75"/>`,
+  medved: (c) => `
+    <circle cx="30" cy="22" r="9.5" fill="${fill(c)}" ${S(c)}/>
+    <circle cx="70" cy="22" r="9.5" fill="${fill(c)}" ${S(c)}/>
+    <circle cx="30" cy="22" r="4.6" fill="${darken(c, 0.3)}" opacity=".6"/>
+    <circle cx="70" cy="22" r="4.6" fill="${darken(c, 0.3)}" opacity=".6"/>`,
+};
+export const ANIMAL_KINDS = Object.keys(EARS);
+
+const eye = (x, y) => `
+  <ellipse cx="${x}" cy="${y}" rx="4.4" ry="4.8" fill="#fff" stroke="#2a2258" stroke-width="1.5"/>
+  <circle cx="${x}" cy="${y + 0.8}" r="2.4" fill="#2a2258"/>
+  <circle cx="${x - 0.9}" cy="${y - 0.6}" r="0.9" fill="#fff"/>`;
+
+export function animalFace(happy) {
+  const mouth = happy
+    ? '<path d="M42 50 q8 8 16 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>'
+    : '<path d="M43 54 q7 -5 14 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>';
+  const brows = happy ? '' : `
+    <path d="M35 31 l8 -3" stroke="#2a2258" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M65 31 l-8 -3" stroke="#2a2258" stroke-width="1.8" stroke-linecap="round"/>`;
+  const tear = happy ? '' : '<path d="M36 42 q-2 4 0 6 q2 -2 0 -6 Z" fill="#7fd0ff" stroke="#3a7bbf" stroke-width=".7"/>';
+  return `${brows}${eye(40, 37)}${eye(60, 37)}
+    <ellipse cx="50" cy="45" rx="3.4" ry="2.4" fill="#2a2258"/>
+    ${mouth}${tear}
+    <ellipse cx="31" cy="47" rx="4" ry="2.6" fill="#ff7a9c" opacity="${happy ? 0.6 : 0.3}"/>
+    <ellipse cx="69" cy="47" rx="4" ry="2.6" fill="#ff7a9c" opacity="${happy ? 0.6 : 0.3}"/>`;
+}
+
+export function animal(kind, c, happy = false) {
+  return `
+    <ellipse cx="50" cy="88" rx="25" ry="22" fill="${fill(c)}" ${S(c)}/>
+    <ellipse cx="50" cy="92" rx="14" ry="13" fill="${PALETTE.cream}" opacity=".75"/>
+    <ellipse cx="38" cy="108" rx="8" ry="5" fill="${fill(c)}" ${S(c)}/>
+    <ellipse cx="62" cy="108" rx="8" ry="5" fill="${fill(c)}" ${S(c)}/>
+    ${EARS[kind](c)}
+    <ellipse cx="50" cy="40" rx="26" ry="23" fill="${fill(c)}" ${S(c)}/>
+    <ellipse cx="50" cy="48" rx="11" ry="8" fill="${PALETTE.cream}" opacity=".8"/>
+    <path d="M32 26 q6 -6 14 -6" stroke="#fff" stroke-width="2.4" opacity=".5" fill="none" stroke-linecap="round"/>
+    <g class="pet-face">${animalFace(happy)}</g>`;
+}
+
+/* ---------- jedlo a drobnosti (stred 0 0, velkost cca 20) ---------- */
+export const FOODS = {
+  ryba: `
+    <path d="M8 0 l7 -6 v12 Z" fill="${fill(PALETTE.blue)}" ${S(PALETTE.blue, 1.4)}/>
+    <ellipse cx="-2" cy="0" rx="11" ry="6.5" fill="${fill(PALETTE.blue)}" ${S(PALETTE.blue, 1.4)}/>
+    <circle cx="-7" cy="-1.5" r="1.6" fill="#2a2258"/>
+    <path d="M-1 -4 q3 4 0 8" fill="none" stroke="${ink(PALETTE.blue)}" stroke-width="1"/>`,
+  kost: `
+    <path d="M-9 -2.5 h18 v5 h-18 Z" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1.2"/>
+    <circle cx="-10" cy="-3.5" r="3.6" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1.2"/>
+    <circle cx="-10" cy="3.5" r="3.6" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1.2"/>
+    <circle cx="10" cy="-3.5" r="3.6" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1.2"/>
+    <circle cx="10" cy="3.5" r="3.6" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1.2"/>
+    <path d="M-9 -1.6 h18 v3.2 h-18 Z" fill="${PALETTE.cream}"/>`,
+  mrkva: `
+    <path d="M-3 -6 q-4 -6 -1 -9 q2 3 2.5 7 q1 -5 5 -7 q1 5 -2.5 9 Z" fill="#5cc45a" stroke="#2f7a32" stroke-width="1"/>
+    <path d="M-5 -6 h10 q1 2 0 4 l-4.5 15 q-0.5 1.5 -1 0 l-4.5 -15 q-1 -2 0 -4 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange, 1.3)}/>
+    <path d="M-3 -1 h3 M-1.5 4 h3" stroke="${ink(PALETTE.orange)}" stroke-width="1" stroke-linecap="round"/>`,
+  syr: `
+    <path d="M-11 6 L11 6 L11 -4 L-11 -1 Z" fill="${fill(PALETTE.yellow)}" ${S(PALETTE.yellow, 1.3)}/>
+    <path d="M-11 -1 L11 -4 L4 -9 Z" fill="${lighten(PALETTE.yellow, 0.4)}" ${S(PALETTE.yellow, 1.3)}/>
+    <circle cx="-5" cy="2.5" r="1.8" fill="${darken(PALETTE.yellow, 0.15)}"/>
+    <circle cx="4" cy="1" r="2.3" fill="${darken(PALETTE.yellow, 0.15)}"/>`,
+  med: `
+    <path d="M-8 -5 q-3 7 0 13 q8 3 16 0 q3 -6 0 -13 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange, 1.3)}/>
+    <rect x="-9.5" y="-8.5" width="19" height="4.5" rx="2" fill="${PALETTE.cream}" stroke="#b9a27e" stroke-width="1"/>
+    <path d="M-4 -4 q0 4 1.5 4 q1.5 0 1.5 -3" fill="${PALETTE.yellow}" stroke="${ink(PALETTE.yellow)}" stroke-width=".7"/>
+    <text x="0" y="5" font-size="5.5" font-weight="800" text-anchor="middle" fill="${PALETTE.cream}" font-family="Baloo 2, sans-serif">MED</text>`,
+};
+// co ktore zvieratko je
+export const FOOD_OF = { macka: 'ryba', pes: 'kost', zajac: 'mrkva', mys: 'syr', medved: 'med' };
+
+
 export const ICONS = {
   starPlain: `<path d="${starPath(12, 12.4, 10.6, 4.8, 5, 0.34)}" fill="currentColor"/>`,
   // reproduktor; vlny/skrtnutie sa prepinaju cez CSS triedu .off na tlacidle

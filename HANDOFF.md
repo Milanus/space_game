@@ -93,7 +93,10 @@ takže preklad musí prepísať aj `data-text` - inak ostane pod novým textom s
 | Čo nasleduje? | sequence.js | AB → AAB → ABC → ABBC, 4 kolá |
 | Prvé písmeno | letters.js | 2 → 4 možnosti, 5 kôl |
 | Poskladaj tvar | tangram.js | raketa (3 dieliky) → hviezda (6) |
-| Zvieracia ambulancia | vet.js | 6 úrovní: ťukať baktérie, ťahať náplasti na rany, šúchať blato (každé 2×, druhé kolo viac) |
+| Zvieracia ambulancia | vet.js | 6 úrovní: ťukať baktérie, ťahať náplasti na rany, šúchať blato (každé 2×, druhé kolo viac); zvieratko je náhodné |
+| Nakŕm zvieratko | feed.js | 3 úrovne: potiahnuť správne jedlo k pusinke (2, 3, 4 na výber; posledná bez nápovedy v bubline) |
+| Röntgen | xray.js | 3 úrovne: lupou hľadať 2-4 prehltnuté veci (ťuknúť alebo podržať), vždy 3 hviezdy |
+| Daj liek | medicine.js | 3 úrovne: lyžičkou nabrať sirup správnej farby a dať do pusinky |
 
 Hviezdy 1-3 podľa počtu chýb, najlepší výsledok na hru sa drží v `localStorage`.
 Úroveň sa posúva tlačidlom "ďalej" po výhre a ukladá sa - pri ďalšom spustení hra
@@ -116,7 +119,7 @@ V `localStorage` je jeden kľúč `vesmirne-hadanky`:
 
 ## Čo je overené a čo nie
 
-Overené: všetkých 8 hier prejde do výhry, offline režim, service worker, cache s fontami,
+Overené: všetkých 11 hier prejde do výhry, offline režim, service worker, cache s fontami,
 vzhľad na 1180×820 a 430×900.
 
 **Neoverené: reálny dotyk na reálnom tablete.** Všetko bolo klikané myšou/syntetickými
@@ -126,6 +129,7 @@ eventmi. Pri prvom hraní s dieťaťom sleduj hlavne:
 - ťahanie rakety v bludisku pri rýchlom pohybe prsta,
 - či nie sú terče na ťukanie v "Nájdi rozdiely" primalé,
 - "Zvieracia ambulancia": `SNAP = 11` pri náplastiach a `RUB_NEED = 60` (koľko treba šúchať blato).
+- Zvieracie hry: `EAT = 17` (feed), `REACH = 12` (medicine), `LENS = 17`, `HOLD = 350` ms (xray). Spoločné pomôcky a `nextPet()` (náhodné zvieratko bez opakovania) sú v `js/games/clinic.js`.
 
 ## Nájdené a opravené bugy (nech sa nevrátia)
 

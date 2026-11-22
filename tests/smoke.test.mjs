@@ -48,7 +48,7 @@ let fails = 0;
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 
 const cards = $$('.card');
-ok(cards.length === 8, `hub ma 8 hier (${cards.length})`);
+ok(cards.length === 11, `hub ma 11 hier (${cards.length})`);
 
 /* ---- JAZYK ---- */
 ok(window.document.documentElement.lang === 'cs', 'jazyk: html lang je cs');
@@ -236,10 +236,10 @@ ok($('#win').classList.contains('show'), 'skladanie: hotovy obrazok = vyhra');
 
 /* ---- 8. ZVIERACIA AMBULANCIA: baktérie, náplasti, blato ---- */
 const pos = (n) => n.getAttribute('transform').match(/translate\(([-\d.]+) ([-\d.]+)\)/).slice(1).map(Number);
-async function openVet(level) {
+async function openVet(level, slot = 7) {
   $('#win-home').click();
   await sleep(20);
-  $$('.card-slot')[7].querySelectorAll('.lvl')[level].click();
+  $$('.card-slot')[slot].querySelectorAll('.lvl')[level].click();
   await sleep(30);
   const v = $('.vet-wrap svg');
   const [, , VW, VH] = v.getAttribute('viewBox').split(' ').map(Number);
@@ -281,6 +281,68 @@ for (const m of $$('.vet-mud')) {
 await sleep(1700);
 ok($$('.vet-mud').length === 0, 'ambulancia: blato zmyté');
 ok($('#win').classList.contains('show'), 'ambulancia: čisté zvieratko = vyhra');
+
+/* ---- 9. NAKRM ZVIERATKO ---- */
+// pusinka zvieratka (50,50) v zmensenom rozlozeni = (50,44) v svg
+vsvg = await openVet(2, 8);
+const feedRounds = $$('.pip').length;
+ok(feedRounds === 5, `krmenie: 5 kôl (${feedRounds})`);
+const drop = (node, x, y) => {
+  fire(node, 'pointerdown', x, y);
+  fire(vsvg, 'pointermove', 50, 44);
+  fire(vsvg, 'pointerup', 50, 44);
+};
+// zle jedlo sa vrati na miesto a nezapocita sa
+const wrong = $$('.feed-food').find((f) => f.dataset.food !== vsvg.dataset.want);
+const home = wrong.getAttribute('transform');
+drop(wrong.querySelector('circle'), ...pos(wrong));
+ok(wrong.getAttribute('transform') === home && pipsOn() === 0, 'krmenie: zle jedlo sa vrati, kolo sa neráta');
+for (let r = 0; r < feedRounds; r++) {
+  const food = $(`.feed-food[data-food="${vsvg.dataset.want}"]`);
+  drop(food.querySelector('circle'), ...pos(food));
+  await sleep(1000);
+}
+await sleep(1300);
+ok($('#win').classList.contains('show'), 'krmenie: všetky zvieratká nakŕmené = vyhra');
+
+/* ---- 10. RONTGEN ---- */
+vsvg = await openVet(2, 9);
+const xItems = $$('.xr-item');
+ok(xItems.length === 4, `röntgen: 4 schované veci (${xItems.length})`);
+for (const it of xItems) {
+  const [x, y] = pos(it);
+  fire(vsvg, 'pointerdown', x, y);
+  fire(vsvg, 'pointerup', x, y);
+  await sleep(10);
+}
+await sleep(1700);
+ok($$('.xr-out').length === 4, 'röntgen: všetky veci vytiahnuté');
+ok($('#win').classList.contains('show'), 'röntgen: hotovo = vyhra');
+
+/* ---- 11. DAJ LIEK ---- */
+// prst drzi lyzicku za rukovat: hlavicka = prst + (-9, -8)
+vsvg = await openVet(2, 10);
+const doses = $$('.pip').length;
+ok(doses === 4 && $$('.md-bottle').length === 3, `liek: 4 dávky, 3 fľaše (${doses})`);
+const spoonDrop = (hx, hy) => {
+  fire($('.md-spoon circle'), 'pointerdown', 80, 112);
+  fire(vsvg, 'pointermove', hx + 9, hy + 8);
+  fire(vsvg, 'pointerup', hx + 9, hy + 8);
+};
+const syrup = () => $('.md-syrup').getAttribute('fill');
+for (let d = 0; d < doses; d++) {
+  for (const b of $$('.md-bottle')) {
+    const [bx, by] = pos(b);
+    spoonDrop(bx, by - 6);
+    if (syrup() !== 'none') break;
+  }
+  ok(syrup() !== 'none', `liek: dávka ${d + 1} nabratá`);
+  spoonDrop(50, 44);
+  ok(syrup() === 'none', `liek: dávka ${d + 1} podaná`);
+  await sleep(800);
+}
+await sleep(1300);
+ok($('#win').classList.contains('show'), 'liek: všetky dávky = vyhra');
 
 ok(errors.length === 0, `ziadne chyby v konzole (${errors.join(' | ')})`);
 console.log(fails ? `\n${fails} FAILS` : '\nvsetko OK');

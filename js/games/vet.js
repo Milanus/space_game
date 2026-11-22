@@ -1,4 +1,5 @@
-import { PALETTE, ALL_DEFS, ink, svgDoc, svg, stickered } from '../art.js';
+import { PALETTE, ALL_DEFS, svgDoc, svg, stickered, animal } from '../art.js';
+import { pointerMap, sparkle as spark, celebrate, starsFor, trayRect, FIT_TOP, FIT_FULL, fitAttr, fromBody, toBody as bodyOf, nextPet } from './clinic.js';
 import { shuffle, el, wait } from '../util.js';
 import { sfx } from '../audio.js';
 
@@ -12,59 +13,6 @@ const SNAP = 11;      // ako blizko ku rane musi naplast pustit
 const RUB = 9;        // polomer blatovej skvrny pre sucanie
 const RUB_NEED = 60;  // kolko "prejdenej drahy" prstom treba na jednu skvrnu
 
-const fill = (c) => `url(#g${c.slice(1)})`;
-const S = (c, w = 2.4) => `stroke="${ink(c)}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"`;
-
-/* ---------- zvieratka ---------- */
-const EARS = {
-  macka: (c) => `
-    <path d="M28 30 L30 6 L48 20 Z" fill="${fill(c)}" ${S(c)}/>
-    <path d="M72 30 L70 6 L52 20 Z" fill="${fill(c)}" ${S(c)}/>
-    <path d="M32 24 L33 13 L41 20 Z" fill="${PALETTE.pink}" opacity=".8"/>
-    <path d="M68 24 L67 13 L59 20 Z" fill="${PALETTE.pink}" opacity=".8"/>`,
-  pes: (c) => `
-    <path d="M30 22 q-16 -4 -18 14 q-2 16 8 20 q6 -12 12 -24 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange)}/>
-    <path d="M70 22 q16 -4 18 14 q2 16 -8 20 q-6 -12 -12 -24 Z" fill="${fill(PALETTE.orange)}" ${S(PALETTE.orange)}/>`,
-  zajac: (c) => `
-    <path d="M38 22 q-10 -22 -2 -24 q8 -2 10 24 Z" fill="${fill(c)}" ${S(c)}/>
-    <path d="M62 22 q10 -22 2 -24 q-8 -2 -10 24 Z" fill="${fill(c)}" ${S(c)}/>
-    <path d="M40 18 q-5 -13 -2 -15 q4 0 5 15 Z" fill="${PALETTE.pink}" opacity=".7"/>
-    <path d="M60 18 q5 -13 2 -15 q-4 0 -5 15 Z" fill="${PALETTE.pink}" opacity=".7"/>`,
-};
-
-const eye = (x, y) => `
-  <ellipse cx="${x}" cy="${y}" rx="4.4" ry="4.8" fill="#fff" stroke="#2a2258" stroke-width="1.5"/>
-  <circle cx="${x}" cy="${y + 0.8}" r="2.4" fill="#2a2258"/>
-  <circle cx="${x - 0.9}" cy="${y - 0.6}" r="0.9" fill="#fff"/>`;
-
-// tvar a tvar tvare zvlast - po vyliecani sa vymeni iba .vet-face
-function face(happy) {
-  const mouth = happy
-    ? '<path d="M42 50 q8 8 16 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>'
-    : '<path d="M43 54 q7 -5 14 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>';
-  const brows = happy ? '' : `
-    <path d="M35 31 l8 -3" stroke="#2a2258" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M65 31 l-8 -3" stroke="#2a2258" stroke-width="1.8" stroke-linecap="round"/>`;
-  const tear = happy ? '' : '<path d="M36 42 q-2 4 0 6 q2 -2 0 -6 Z" fill="#7fd0ff" stroke="#3a7bbf" stroke-width=".7"/>';
-  return `${brows}${eye(40, 37)}${eye(60, 37)}
-    <ellipse cx="50" cy="45" rx="3.4" ry="2.4" fill="#2a2258"/>
-    ${mouth}${tear}
-    <ellipse cx="31" cy="47" rx="4" ry="2.6" fill="#ff7a9c" opacity="${happy ? 0.6 : 0.3}"/>
-    <ellipse cx="69" cy="47" rx="4" ry="2.6" fill="#ff7a9c" opacity="${happy ? 0.6 : 0.3}"/>`;
-}
-
-export function animal(kind, c, happy = false) {
-  return `
-    <ellipse cx="50" cy="88" rx="25" ry="22" fill="${fill(c)}" ${S(c)}/>
-    <ellipse cx="50" cy="92" rx="14" ry="13" fill="${PALETTE.cream}" opacity=".75"/>
-    <ellipse cx="38" cy="108" rx="8" ry="5" fill="${fill(c)}" ${S(c)}/>
-    <ellipse cx="62" cy="108" rx="8" ry="5" fill="${fill(c)}" ${S(c)}/>
-    ${EARS[kind](c)}
-    <ellipse cx="50" cy="40" rx="26" ry="23" fill="${fill(c)}" ${S(c)}/>
-    <ellipse cx="50" cy="48" rx="11" ry="8" fill="${PALETTE.cream}" opacity=".8"/>
-    <path d="M32 26 q6 -6 14 -6" stroke="#fff" stroke-width="2.4" opacity=".5" fill="none" stroke-linecap="round"/>
-    <g class="vet-face">${face(happy)}</g>`;
-}
 
 /* ---------- veci na osetrenie ---------- */
 const germ = (x, y, i) => `
@@ -105,12 +53,12 @@ const SPOTS = [
 ];
 
 const LEVELS = [
-  { kind: 'macka', color: PALETTE.orange, task: 'germs', n: 4 },
-  { kind: 'pes', color: PALETTE.yellow, task: 'plasters', n: 3 },
-  { kind: 'zajac', color: PALETTE.violet, task: 'mud', n: 3 },
-  { kind: 'pes', color: PALETTE.blue, task: 'germs', n: 6 },
-  { kind: 'macka', color: PALETTE.mint, task: 'plasters', n: 4 },
-  { kind: 'zajac', color: PALETTE.pink, task: 'mud', n: 5 },
+  { task: 'germs', n: 4 },
+  { task: 'plasters', n: 3 },
+  { task: 'mud', n: 3 },
+  { task: 'germs', n: 6 },
+  { task: 'plasters', n: 4 },
+  { task: 'mud', n: 5 },
 ];
 
 export default {
@@ -122,6 +70,7 @@ export default {
 
   start(stage, api) {
     const L = LEVELS[Math.min(api.level, LEVELS.length - 1)];
+    const pet = nextPet();
     const spots = shuffle(SPOTS).slice(0, L.n);
     let done = 0;
     let misses = 0;
@@ -134,21 +83,21 @@ export default {
     // naplasty cakaju v pase pod zvieratkom
     const trayX = (i) => 50 + (i - (L.n - 1) / 2) * Math.min(22, 92 / L.n);
     const tray = L.task === 'plasters'
-      ? `<rect x="2" y="${TRAY_Y - 9}" width="${W - 4}" height="18" rx="6" fill="#0d1140" opacity=".35"/>
+      ? `${trayRect(TRAY_Y)}
          <g class="vet-plasters">${spots.map((_, i) => `
            <g class="vet-plaster" data-i="${i}" transform="translate(${trayX(i)} ${TRAY_Y}) rotate(-25)">
              <rect x="-11" y="-7" width="22" height="14" fill="transparent"/>${plaster()}</g>`).join('')}</g>`
       : '';
 
     // pri naplastoch sa zvieratko zmensi a posunie hore, aby bolo miesto na pas
-    const fit = L.task === 'plasters' ? 'translate(50 4) scale(0.8) translate(-50 0)' : 'translate(0 8)';
+    const F = L.task === 'plasters' ? FIT_TOP : FIT_FULL;
 
     const wrap = el(svgDoc(`
       <div class="vet-wrap">
         <svg viewBox="0 0 ${W} ${H}">
           ${ALL_DEFS}
-          <g transform="${fit}"><g class="vet-body">
-            <g class="vet-animal" filter="url(#sticker)">${animal(L.kind, L.color)}</g>
+          <g transform="${fitAttr(F)}"><g class="vet-body">
+            <g class="vet-animal" filter="url(#sticker)">${animal(pet.kind, pet.color)}</g>
             <g class="vet-items">${items}</g>
           </g></g>
           ${tray}
@@ -162,20 +111,10 @@ export default {
     const fx = wrap.querySelector('.vet-fx');
     api.setProgress(L.n, 0);
 
-    // prevod medzi obrazovkou, celym svg a suradnicami zvieratka (bez fit transformu)
-    const toSvg = (ev) => {
-      const r = svgEl.getBoundingClientRect();
-      return { x: ((ev.clientX - r.left) / r.width) * W, y: ((ev.clientY - r.top) / r.height) * H };
-    };
-    const [fs, fdx, fdy] = L.task === 'plasters' ? [0.8, 10, 4] : [1, 0, 8];
-    const toBody = (p) => ({ x: (p.x - fdx) / fs, y: (p.y - fdy) / fs });
-
-    function sparkle(x, y) {
-      const s = el(`<svg><g class="vet-spark" transform="translate(${x} ${y})">
-        <path d="M0 -6 q1.2 4.8 6 6 q-4.8 1.2 -6 6 q-1.2 -4.8 -6 -6 q4.8 -1.2 6 -6 Z" fill="${PALETTE.yellow}"/></g></svg>`).firstElementChild;
-      fx.appendChild(s);
-      setTimeout(() => s.remove(), 700);
-    }
+    // prevod medzi obrazovkou, celym svg a suradnicami zvieratka
+    const toSvg = pointerMap(svgEl, W, H);
+    const toBody = (p) => bodyOf(F, p);
+    const sparkle = (x, y) => spark(fx, x, y);
 
     async function healed() {
       done++;
@@ -184,12 +123,8 @@ export default {
       if (done < L.n) return;
       over = true;
       await wait(300);
-      // zvieratko sa usmeje a poskoci
-      wrap.querySelector('.vet-face').innerHTML = face(true);
-      body.classList.add('vet-happy');
-      for (let k = 0; k < 5; k++) setTimeout(() => sparkle(15 + Math.random() * 70, 10 + Math.random() * 70), k * 120);
-      await wait(1100);
-      api.win(misses <= 1 ? 3 : misses <= 4 ? 2 : 1);
+      await celebrate(wrap, body, fx);
+      api.win(starsFor(misses));
     }
 
     /* --- baktérie: tukni --- */
@@ -221,7 +156,7 @@ export default {
           dirt[i] -= d;
           const node = wrap.querySelector(`.vet-mud[data-i="${i}"]`);
           node.style.opacity = Math.max(0, dirt[i] / RUB_NEED).toFixed(2);
-          if (dirt[i] <= 0) { node.remove(); sparkle(x * fs + fdx, y * fs + fdy); healed(); }
+          if (dirt[i] <= 0) { node.remove(); { const q = fromBody(F, x, y); sparkle(q.x, q.y); } healed(); }
         });
         // bublinky za prstom
         if (d > 2 && Math.random() < 0.5) {

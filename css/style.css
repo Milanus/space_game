@@ -451,11 +451,27 @@ html, body {
 .vet-plaster.dragging { filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
 .vet-stuck { animation: pop .4s ease; transform-box: fill-box; transform-origin: center; }
 .vet-mud { transition: opacity .1s; }
-.vet-happy { animation: vethop .55s ease 2; transform-box: fill-box; transform-origin: bottom; }
-.vet-spark { animation: vetspark .7s ease-out forwards; transform-box: fill-box; transform-origin: center; }
 .vet-bubble { animation: vetbubble .8s ease-out forwards; }
 @keyframes wobble { 50% { transform: rotate(12deg) scale(1.08); } }
 @keyframes vetpop { 40% { transform: scale(1.4); } 100% { transform: scale(0); opacity: 0; } }
-@keyframes vethop { 40% { transform: translateY(-8px) scaleY(1.04); } 70% { transform: translateY(0) scaleY(.96); } }
-@keyframes vetspark { from { transform: scale(.2) rotate(0); } 50% { transform: scale(1.2) rotate(45deg); } to { transform: scale(0) rotate(90deg); opacity: 0; } }
+@keyframes clhop { 40% { transform: translateY(-8px) scaleY(1.04); } 70% { transform: translateY(0) scaleY(.96); } }
+@keyframes clspark { from { transform: scale(.2) rotate(0); } 50% { transform: scale(1.2) rotate(45deg); } to { transform: scale(0) rotate(90deg); opacity: 0; } }
 @keyframes vetbubble { to { transform: translateY(-6px); opacity: 0; } }
+
+/* spolocne pre zvieracie hry (js/games/clinic.js) */
+.cl-hop { animation: clhop .55s ease 2; transform-box: fill-box; transform-origin: bottom; }
+.cl-spark { animation: clspark .7s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+.cl-shake { animation: clshake .45s ease; transform-box: fill-box; transform-origin: center; }
+.cl-drag { cursor: grab; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
+.cl-drag.dragging { filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
+@keyframes clshake { 25% { transform: translateX(-3px) rotate(-4deg); } 75% { transform: translateX(3px) rotate(4deg); } }
+
+/* Nakrm zvieratko, Rontgen, Daj liek */
+.feed-inner { transform-box: fill-box; transform-origin: center; }
+.feed-eaten .feed-inner { animation: vetpop .45s ease-in forwards; }
+.feed-in { animation: pop .45s ease; transform-box: fill-box; transform-origin: bottom; }
+.xr-lens { cursor: grab; pointer-events: none; }
+.xr-hint { animation: xrhint 1.2s ease-in-out infinite; }
+.xr-pop { animation: pop .45s ease; transform-box: fill-box; transform-origin: center; }
+.md-inner { transform-box: fill-box; transform-origin: bottom; }
+@keyframes xrhint { 50% { opacity: .55; } }
