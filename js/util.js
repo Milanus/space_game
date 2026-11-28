@@ -23,7 +23,7 @@ export const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const KEY = 'vesmirne-hadanky';
 
-// Ulozeny stav: { stars: {id: 1-3}, levels: {id: index}, sound: bool }.
+// Ulozeny stav: { stars: {id: 1-3}, levels: {id: index}, sound: bool, section: id zalozky }.
 // Stara verzia mala hviezdy priamo v korenovom objekte ({pairs: 3}) - to este vieme nacitat.
 export function loadProgress() {
   let raw = {};
@@ -40,6 +40,7 @@ export function loadProgress() {
     stars,
     levels: raw.levels && typeof raw.levels === 'object' ? raw.levels : {},
     sound: raw.sound !== false,
+    section: typeof raw.section === 'string' ? raw.section : null,
   };
 }
 
@@ -62,3 +63,4 @@ export function saveLevel(gameId, level) {
 }
 
 export const saveSound = (on) => save({ sound: !!on });
+export const saveSection = (id) => save({ section: id });

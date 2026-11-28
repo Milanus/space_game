@@ -35,10 +35,15 @@ Každá hra v `js/games/` exportuje default:
 Pridanie do poľa `GAMES` v `js/main.js` stačí - menu, lišta s hviezdičkami, prepínanie
 úrovní aj obrazovka výhry idú automaticky. Hviezdy (1-3 podľa počtu chýb) ukladá
 `saveStars()` do localStorage, dosiahnutú úroveň `saveLevel()`. Celý stav je jeden kľúč
-`vesmirne-hadanky`: `{ stars, levels, sound }` (starý plochý formát sa ešte načíta).
+`vesmirne-hadanky`: `{ stars, levels, sound, section }` (starý plochý formát sa ešte načíta).
 Zvuk sa vypína tlačidlom v menu - `setMuted()` v `js/audio.js`, stav prežije reštart.
 Karta v menu je `.card-slot` (obal) = tlačidlo `.card` + bodky `.lvl` s úrovňami; bodka
 spustí danú úroveň, takže `saveLevel()` ukladá poslednú hranú, nie najvyššiu dosiahnutú.
+
+Menu má záložky: pole `SECTIONS` v `js/main.js` (sekcia = `id`, mriežka `#game-cards` / `#pet-cards`,
+zoznam hier). Novú hru pridaj do `games` správnej sekcie; i18n kľúč záložky je `sec.<id>`. Posledná
+záložka sa ukladá ako `section` v tom istom kľúči. Zvieracie hry zdieľajú pomôcky v `js/games/clinic.js`
+(`nextPet()` vyberá náhodné zvieratko bez opakovania).
 
 ### Grafika (js/art.js)
 
@@ -51,7 +56,7 @@ obrys + tieň) robí SVG filter `#sticker`, nie ručné obrysy.
 
 **Kritické:** každé `<svg>` musí mať vlastné id-čka gradientov a filtrov. `svg()` to rieši
 cez `uniquify()` samo; ak hra skladá vlastné `<svg>` z `ALL_DEFS` + tvarov, prežeň celý
-reťazec cez `svgDoc()`. Bez toho Chrome nevykreslí gradienty v 3D-otočenej karte
+reťazec cez `svgDoc()`. Markup pridaný neskôr cez `innerHTML` do takého `<svg>` prežeň cez `relink(markup, svgEl)`. Bez toho Chrome nevykreslí gradienty v 3D-otočenej karte
 (Nájdi dvojice) a figúrky vyjdú čierne.
 
 ### Jazyky (js/i18n.js)

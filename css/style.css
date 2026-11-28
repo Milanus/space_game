@@ -103,6 +103,39 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* zalozky Vesmir / Zvieratka nad kartami */
+.cards[hidden] { display: none; }
+.sections {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding: 4px 10px 2px;
+}
+.sec-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  padding: 6px 20px 6px 8px;
+  border: 3px solid rgba(255,243,221,.35);
+  border-radius: 999px;
+  background: rgba(13,17,64,.55);
+  color: rgba(255,243,221,.75);
+  font: 700 21px/1 'Baloo 2', system-ui, sans-serif;
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease;
+}
+.sec-tab svg { width: 44px; height: 44px; flex: none; }
+.sec-tab:not(.on) svg { opacity: .7; filter: saturate(.6); }
+.sec-tab.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--line);
+  transform: scale(1.06);
+  box-shadow: 0 5px 0 rgba(0,0,0,.28);
+}
+.sec-tab:active { transform: scale(.96); }
+
 /* karta + bodky obtiažnosti; naklonenie sedí na obale, aby sa hýbali spolu */
 .card-slot { position: relative; display: flex; }
 .card-slot:nth-child(odd) { transform: rotate(-1.4deg); }
@@ -475,3 +508,15 @@ html, body {
 .xr-pop { animation: pop .45s ease; transform-box: fill-box; transform-origin: center; }
 .md-inner { transform-box: fill-box; transform-origin: bottom; }
 @keyframes xrhint { 50% { opacity: .55; } }
+
+/* Umy zubky, Horucka, Obviaz brusko */
+.th-dirt { transition: opacity .1s; }
+.fv-flush { transition: opacity 1s ease; }
+.fv-flush.fv-cool { opacity: 0; }
+.fv-inner { transform-box: fill-box; transform-origin: center; }
+/* nastroj, ktory je na rade, jemne pulzuje */
+.fv-next .fv-inner { animation: fvnext 1.1s ease-in-out infinite; }
+.fv-tool.dragging .fv-inner { animation: none; }
+@keyframes fvnext { 50% { transform: scale(1.12); } }
+.bd-band { animation: bdin .3s ease; }
+@keyframes bdin { from { opacity: 0; } }

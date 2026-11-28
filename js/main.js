@@ -1,6 +1,6 @@
 import { startStarfield } from './starfield.js';
-import { shapeSvg, ICONS, PALETTE, lighten, darken } from './art.js';
-import { el, loadProgress, saveStars, saveLevel, pick } from './util.js';
+import { shapeSvg, ICONS, PALETTE, lighten, darken, svg, stickered, animal } from './art.js';
+import { el, loadProgress, saveStars, saveLevel, saveSection, pick } from './util.js';
 import { t, applyStaticText } from './i18n.js';
 import { sfx, isMuted, setMuted } from './audio.js';
 
@@ -15,8 +15,18 @@ import vet from './games/vet.js';
 import feed from './games/feed.js';
 import xray from './games/xray.js';
 import medicine from './games/medicine.js';
+import teeth from './games/teeth.js';
+import fever from './games/fever.js';
+import bandage from './games/bandage.js';
 
-const GAMES = [pairs, maze, diffs, counting, sequence, letters, tangram, vet, feed, xray, medicine];
+// zalozky v menu - kazda ma vlastnu mriezku kariet v index.html
+const SECTIONS = [
+  { id: 'space', cards: 'game-cards', icon: () => shapeSvg('raketa', PALETTE.orange),
+    games: [pairs, maze, diffs, counting, sequence, letters, tangram] },
+  { id: 'pets', cards: 'pet-cards', icon: () => svg(stickered(animal('macka', PALETTE.orange, true))),
+    games: [vet, feed, xray, medicine, teeth, fever, bandage] },
+];
+const sectionOf = (g) => SECTIONS.find((s) => s.games.includes(g));
 
 const hub = document.getElementById('hub');
 const gameScreen = document.getElementById('game');
@@ -37,11 +47,34 @@ function star(on) {
   return `<svg viewBox="0 0 24 24" style="color:${on ? PALETTE.yellow : 'rgba(0,0,0,.18)'}">${ICONS.starPlain}</svg>`;
 }
 
+function renderTabs(active) {
+  const nav = document.getElementById('sections');
+  nav.innerHTML = SECTIONS.map((s) => `
+    <button class="sec-tab${s.id === active.id ? ' on' : ''}" role="tab" data-sec="${s.id}"
+      aria-selected="${s.id === active.id}">${s.icon()}<span>${t(`sec.${s.id}`)}</span></button>`).join('');
+  nav.querySelectorAll('.sec-tab').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.sec === active.id) return;
+    sfx.unlock();
+    sfx.tap();
+    saveSection(b.dataset.sec);
+    renderHub();
+  }));
+}
+
 function renderHub() {
-  const { stars: saved, levels } = loadProgress();
-  const wrap = document.getElementById('game-cards');
-  wrap.innerHTML = '';
-  for (const g of GAMES) {
+  const { stars: saved, levels, section } = loadProgress();
+  const active = SECTIONS.find((s) => s.id === section) || SECTIONS[0];
+  renderTabs(active);
+  for (const sec of SECTIONS) {
+    const grid = document.getElementById(sec.cards);
+    grid.hidden = sec !== active;
+    grid.innerHTML = '';
+    for (const g of sec.games) renderCard(g, grid, saved, levels);
+  }
+}
+
+function renderCard(g, wrap, saved, levels) {
+  {
     const earned = saved[g.id] || 0;
     const at = Math.min(levels[g.id] || 0, g.levels - 1);
     // bodky = obtiaznost; plne su tie, ktore uz dieta hralo, kruzok je aktualna
@@ -82,6 +115,7 @@ function openGame(game, level = loadProgress().levels[game.id] || 0) {
   state.game = game;
   state.level = Math.min(level, game.levels - 1);
   saveLevel(game.id, state.level);
+  saveSection(sectionOf(game).id); // po navrate z hry ostane otvorena ta ista zalozka
   show(gameScreen);
   restart();
 }

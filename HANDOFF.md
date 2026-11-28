@@ -97,6 +97,9 @@ takže preklad musí prepísať aj `data-text` - inak ostane pod novým textom s
 | Nakŕm zvieratko | feed.js | 3 úrovne: potiahnuť správne jedlo k pusinke (2, 3, 4 na výber; posledná bez nápovedy v bubline) |
 | Röntgen | xray.js | 3 úrovne: lupou hľadať 2-4 prehltnuté veci (ťuknúť alebo podržať), vždy 3 hviezdy |
 | Daj liek | medicine.js | 3 úrovne: lyžičkou nabrať sirup správnej farby a dať do pusinky |
+| Umy zúbky | teeth.js | 3 úrovne (3/5/8 špinavých zubov): kefkou šúchať zuby v otvorenej pusinke |
+| Horúčka | fever.js | 3 úrovne (2/3/4 pacienti): teplomer k pusinke, potom ľadový obklad na čelo |
+| Obviaž bruško | bandage.js | 3 úrovne (4/6/8 pásov): ťahať kotúčik obväzu sem a tam cez bruško |
 
 Hviezdy 1-3 podľa počtu chýb, najlepší výsledok na hru sa drží v `localStorage`.
 Úroveň sa posúva tlačidlom "ďalej" po výhre a ukladá sa - pri ďalšom spustení hra
@@ -119,7 +122,7 @@ V `localStorage` je jeden kľúč `vesmirne-hadanky`:
 
 ## Čo je overené a čo nie
 
-Overené: všetkých 11 hier prejde do výhry, offline režim, service worker, cache s fontami,
+Overené: všetkých 14 hier prejde do výhry, offline režim, service worker, cache s fontami,
 vzhľad na 1180×820 a 430×900.
 
 **Neoverené: reálny dotyk na reálnom tablete.** Všetko bolo klikané myšou/syntetickými
@@ -129,7 +132,9 @@ eventmi. Pri prvom hraní s dieťaťom sleduj hlavne:
 - ťahanie rakety v bludisku pri rýchlom pohybe prsta,
 - či nie sú terče na ťukanie v "Nájdi rozdiely" primalé,
 - "Zvieracia ambulancia": `SNAP = 11` pri náplastiach a `RUB_NEED = 60` (koľko treba šúchať blato).
-- Zvieracie hry: `EAT = 17` (feed), `REACH = 12` (medicine), `LENS = 17`, `HOLD = 350` ms (xray). Spoločné pomôcky a `nextPet()` (náhodné zvieratko bez opakovania) sú v `js/games/clinic.js`.
+- Zvieracie hry: `EAT = 17` (feed), `REACH = 12` (medicine), `LENS = 17`, `HOLD = 350` ms (xray). `RUB = 6`, `RUB_NEED = 30` (teeth), `REACH = 14` (fever), `EDGE = 15` (bandage). Spoločné pomôcky a `nextPet()` (náhodné zvieratko bez opakovania) sú v `js/games/clinic.js`.
+- Menu má dve záložky (Vesmír, Zvieratká): pole `SECTIONS` v `js/main.js`, posledná záložka sa ukladá ako `section`.
+- Markup vkladaný do hotového `<svg>` cez `innerHTML` (nové zvieratko v kole) musí ísť cez `relink()` z art.js, inak nesedia id gradientov a figúrka je bez farby. Kontroluje to `brokenRefs()` v smoke teste.
 
 ## Nájdené a opravené bugy (nech sa nevrátia)
 

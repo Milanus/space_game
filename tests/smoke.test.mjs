@@ -48,7 +48,7 @@ let fails = 0;
 const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 
 const cards = $$('.card');
-ok(cards.length === 11, `hub ma 11 hier (${cards.length})`);
+ok(cards.length === 14, `hub ma 14 hier (${cards.length})`);
 
 /* ---- JAZYK ---- */
 ok(window.document.documentElement.lang === 'cs', 'jazyk: html lang je cs');
@@ -59,8 +59,20 @@ ok($('#btn-back').getAttribute('aria-label') === 'Zpět', 'jazyk: aria-label tla
 ok(cards[0].querySelector('.card-name').textContent === 'Najdi dvojice',
   `jazyk: nazov hry (${cards[0].querySelector('.card-name').textContent})`);
 
+/* ---- ZALOZKY ---- */
+ok($$('.sec-tab').length === 2 && !$('#game-cards').hidden && $('#pet-cards').hidden,
+  'zalozky: na zaciatku je otvoreny vesmir');
+ok($$('#game-cards .card').length === 7 && $$('#pet-cards .card').length === 7, 'zalozky: 7 + 7 hier');
+ok($$('.sec-tab')[1].textContent.trim() === 'Zvířátka', `zalozky: prelozeny nazov (${$$('.sec-tab')[1].textContent.trim()})`);
+$$('.sec-tab')[1].click();
+ok($('#game-cards').hidden && !$('#pet-cards').hidden && $$('.sec-tab')[1].classList.contains('on'),
+  'zalozky: prepnutie na zvieratka');
+ok(JSON.parse(window.localStorage.getItem('vesmirne-hadanky')).section === 'pets', 'zalozky: zalozka sa pamata');
+$$('.sec-tab')[0].click();
+ok(!$('#game-cards').hidden, 'zalozky: spat na vesmir');
+
 /* ---- 1. NAJDI DVOJICE ---- */
-cards[0].click();
+$$('.card')[0].click();
 await sleep(20);
 let tiles = $$('.tile');
 ok(tiles.length === 6, `dvojice: 6 kariet na 1. urovni (${tiles.length})`);
@@ -179,6 +191,9 @@ ok($$('.marks circle').length >= pipCount, 'rozdiely: najdene su oznacene kruzko
 
 /* ---- 4.-6. KVIZOVE HRY: pocitanie, postupnosti, pismena ---- */
 const pipsOn = () => $$('.pip.on').length;
+// odkazy url(#...) v svg, ktore nemaju svoje id (figurka by vysla bez farby)
+const brokenRefs = (root) => [...new Set([...root.outerHTML.matchAll(/url\(#([^)]+)\)/g)].map((m) => m[1]))]
+  .filter((id) => !root.querySelector(`[id="${id}"]`));
 
 async function playQuiz(cardIdx, label, rounds) {
   $('#win-home').click();
@@ -286,6 +301,7 @@ ok($('#win').classList.contains('show'), 'ambulancia: čisté zvieratko = vyhra'
 // pusinka zvieratka (50,50) v zmensenom rozlozeni = (50,44) v svg
 vsvg = await openVet(2, 8);
 const feedRounds = $$('.pip').length;
+ok(brokenRefs(vsvg).length === 0, `krmenie: zvieratko aj jedlo maju farby (${brokenRefs(vsvg).slice(0, 3)})`);
 ok(feedRounds === 5, `krmenie: 5 kôl (${feedRounds})`);
 const drop = (node, x, y) => {
   fire(node, 'pointerdown', x, y);
@@ -343,6 +359,57 @@ for (let d = 0; d < doses; d++) {
 }
 await sleep(1300);
 ok($('#win').classList.contains('show'), 'liek: všetky dávky = vyhra');
+
+/* ---- 12. UMY ZUBKY ---- */
+// zub v svg = zub zvieratka * 1.7 + (-35, -5); hlavicka kefky = prst + (-10, -7)
+vsvg = await openVet(2, 11);
+ok($$('.th-dirt').length === 8 && $$('.pip').length === 8, `zubky: 8 spinavych zubov (${$$('.th-dirt').length})`);
+ok(!$('#pet-cards').hidden, 'zalozky: hra zo zvieratok otvori po navrate zvieratka');
+const TEETH_AT = [43, 48, 53, 58].flatMap((x) => [[x, 49.6], [x, 62.4]]);
+for (const [tx, ty] of TEETH_AT) {
+  const fx0 = tx * 1.7 - 35 + 10, fy0 = ty * 1.7 - 5 + 7;
+  fire(vsvg, 'pointerdown', fx0, fy0);
+  for (let k = 0; k < 16; k++) fire(vsvg, 'pointermove', fx0 + (k % 2 ? 3 : -3), fy0);
+  fire(vsvg, 'pointerup', fx0, fy0);
+}
+ok($$('.th-dirt').length === 0 && pipsOn() === 8, `zubky: vsetky zuby ciste (${$$('.th-dirt').length})`);
+await sleep(1700);
+ok($('#win').classList.contains('show'), 'zubky: ciste zuby = vyhra');
+
+/* ---- 13. HORUCKA ---- */
+// banka teplomera = prst + (7, 10); pusinka (50,44), celo (50,23.2)
+vsvg = await openVet(2, 12);
+ok($$('.pip').length === 4 && $('.fv-flush'), 'horucka: 4 pacienti, zvieratko je cervene');
+const tool = (t, x, y) => {
+  fire($(`.fv-${t} circle`), 'pointerdown', x, y);
+  fire(vsvg, 'pointermove', x, y);
+  fire(vsvg, 'pointerup', x, y);
+};
+tool('ice', 50, 23.2); // obklad bez merania sa vrati
+ok(pipsOn() === 0 && !$('.fv-cool'), 'horucka: obklad pred teplomerom sa neráta');
+for (let r = 0; r < 4; r++) {
+  tool('thermo', 43, 34);
+  await sleep(1150);
+  tool('ice', 50, 23.2);
+  ok(pipsOn() === r + 1 && $('.fv-cool'), `horucka: pacient ${r + 1} vylieceny`);
+  await sleep(1500);
+  if (r === 0) ok(brokenRefs(vsvg).length === 0, `horucka: dalsi pacient ma farby (${brokenRefs(vsvg).slice(0, 3)})`);
+}
+await sleep(1300);
+ok($('#win').classList.contains('show'), 'horucka: vsetci zdravi = vyhra');
+
+/* ---- 14. OBVIAZ BRUSKO ---- */
+// brusko v svg ma stred (50, 74.4); kazdy prechod zlava doprava = jeden pas
+vsvg = await openVet(2, 13);
+ok($$('.pip').length === 8, `obvaz: 8 pasov (${$$('.pip').length})`);
+fire(vsvg, 'pointerdown', 50, 74);
+fire(vsvg, 'pointermove', 30, 74);
+ok($$('.bd-band').length === 0, 'obvaz: dotyk sam pas neprida');
+for (let k = 0; k < 8; k++) fire(vsvg, 'pointermove', k % 2 ? 30 : 70, 74);
+fire(vsvg, 'pointerup', 30, 74);
+ok($$('.bd-band').length === 8, `obvaz: brusko obviazane (${$$('.bd-band').length})`);
+await sleep(1700);
+ok($('#win').classList.contains('show'), 'obvaz: obviazane = vyhra');
 
 ok(errors.length === 0, `ziadne chyby v konzole (${errors.join(' | ')})`);
 console.log(fails ? `\n${fails} FAILS` : '\nvsetko OK');

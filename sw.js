@@ -1,6 +1,6 @@
 // Service worker: po prvom nacitani hra bezi aj bez internetu.
 // Po zmene suborov zvys VERSION - stara cache sa zmaze a klient sa sam obnovi.
-const VERSION = 'v8';
+const VERSION = 'v9';
 const CACHE = `vesmirne-hadanky-${VERSION}`;
 
 const ASSETS = [
@@ -33,6 +33,9 @@ const ASSETS = [
   'js/games/feed.js',
   'js/games/xray.js',
   'js/games/medicine.js',
+  'js/games/teeth.js',
+  'js/games/fever.js',
+  'js/games/bandage.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/maskable-512.png',

@@ -1,4 +1,4 @@
-import { PALETTE, ALL_DEFS, ICONS, svgDoc, svg, stickered, animal, ANIMAL_KINDS, FOODS, FOOD_OF } from '../art.js';
+import { PALETTE, ALL_DEFS, ICONS, svgDoc, relink, svg, stickered, animal, ANIMAL_KINDS, FOODS, FOOD_OF } from '../art.js';
 import { shuffle, el, wait, pick } from '../util.js';
 import { sfx } from '../audio.js';
 import { pointerMap, sparkle, shake, setFace, celebrate, starsFor, trayRect, FIT_TOP, fitAttr, fromBody, MOUTH, nextPet } from './clinic.js';
@@ -69,19 +69,19 @@ export default {
     function renderRound() {
       const kind = order[round];
       want = FOOD_OF[kind];
-      pet.innerHTML = `<g filter="url(#sticker)">${animal(kind, pick(COLORS))}</g>`;
-      bubbleWrap.innerHTML = bubble(L.hint ? want : null);
+      pet.innerHTML = relink(`<g filter="url(#sticker)">${animal(kind, pick(COLORS))}</g>`, svgEl);
+      bubbleWrap.innerHTML = relink(bubble(L.hint ? want : null), svgEl);
       svgEl.dataset.want = want; // pre testy
 
       const others = shuffle(Object.keys(FOODS).filter((f) => f !== want)).slice(0, L.choices - 1);
       const choices = shuffle([want, ...others]);
       const gap = Math.min(24, 90 / choices.length);
-      foodsLayer.innerHTML = choices.map((f, i) => {
+      foodsLayer.innerHTML = relink(choices.map((f, i) => {
         const x = 50 + (i - (choices.length - 1) / 2) * gap;
         return `<g class="feed-food cl-drag" data-food="${f}" data-home="${x.toFixed(2)} ${TRAY_Y}"
                   transform="translate(${x.toFixed(2)} ${TRAY_Y})">
                   <g class="feed-inner"><circle r="12" fill="transparent"/>${FOODS[f]}</g></g>`;
-      }).join('');
+      }).join(''), svgEl);
       // nove zvieratko pricupita s malym poskokom
       pet.classList.remove('feed-in');
       void pet.getBoundingClientRect();

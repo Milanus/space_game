@@ -27,6 +27,11 @@ export const DICT = {
     'game.feed': 'Nakŕm zvieratko',
     'game.xray': 'Röntgen',
     'game.medicine': 'Daj liek',
+    'game.teeth': 'Umy zúbky',
+    'game.fever': 'Horúčka',
+    'game.bandage': 'Obviaž bruško',
+    'sec.space': 'Vesmír',
+    'sec.pets': 'Zvieratká',
   },
   cs: {
     'app.title': 'Vesmírné hádanky',
@@ -50,6 +55,11 @@ export const DICT = {
     'game.feed': 'Nakrm zvířátko',
     'game.xray': 'Rentgen',
     'game.medicine': 'Dej lék',
+    'game.teeth': 'Vyčisti zoubky',
+    'game.fever': 'Horečka',
+    'game.bandage': 'Obvaž bříško',
+    'sec.space': 'Vesmír',
+    'sec.pets': 'Zvířátka',
   },
   en: {
     'app.title': 'Space Puzzles',
@@ -73,6 +83,11 @@ export const DICT = {
     'game.feed': 'Feed the Pet',
     'game.xray': 'X-ray',
     'game.medicine': 'Give Medicine',
+    'game.teeth': 'Brush Teeth',
+    'game.fever': 'Fever',
+    'game.bandage': 'Bandage',
+    'sec.space': 'Space',
+    'sec.pets': 'Pets',
   },
 };
 

@@ -251,8 +251,9 @@ const eye = (x, y) => `
   <circle cx="${x}" cy="${y + 0.8}" r="2.4" fill="#2a2258"/>
   <circle cx="${x - 0.9}" cy="${y - 0.6}" r="0.9" fill="#fff"/>`;
 
-export function animalFace(happy) {
-  const mouth = happy
+// withMouth = false: bez pusinky (zubky si kreslia vlastnu otvorenu)
+export function animalFace(happy, withMouth = true) {
+  const mouth = !withMouth ? '' : happy
     ? '<path d="M42 50 q8 8 16 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>'
     : '<path d="M43 54 q7 -5 14 0" fill="none" stroke="#2a2258" stroke-width="2.2" stroke-linecap="round"/>';
   const brows = happy ? '' : `
@@ -389,6 +390,15 @@ const stickered = (inner) =>
 export function svg(inner, cls = '', vb = '0 0 100 100') {
   return uniquify(`<svg viewBox="${vb}" class="${cls}" aria-hidden="true">
     <defs>${gradsFor(inner)}${DEFS}</defs>${inner}</svg>`);
+}
+
+// markup vkladany neskor do hotoveho <svg> (innerHTML) potrebuje ten isty suffix id-ciek,
+// aky svg dostal pri svgDoc() - inak gradienty a #sticker nenajde a figurka vyjde bez farby
+export function relink(markup, svgEl) {
+  const id = svgEl.querySelector('[id^="sticker_"]')?.id;
+  if (!id) return markup;
+  const suf = id.slice('sticker'.length);
+  return markup.replace(ID_RE, (_, h, name, tail) => `${h}${name}${suf}${tail}`);
 }
 
 // cele <svg> hry aj s tvarmi - id-cka sa prefixuju naraz, aby sedeli odkazy
